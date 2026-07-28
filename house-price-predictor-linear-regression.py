@@ -1,38 +1,32 @@
-from sklearn.model_selection import train_test_split
-from sklearn.preprocessing import StandardScaler
-from sklearn.metrics import mean_absolute_error, r2_score
-import pandas as pd
+# Import necessary libraries
 from sklearn.linear_model import LinearRegression
+import pandas as pd
 
-# دادهات مثل قبل
+# Create dataset with housing features and prices
 data = pd.DataFrame({
-    'metraj': [50, 80, 100, 120, 150, 70, 90, 110],
-    'sal_sakht': [1390, 1395, 1400, 1385, 1398, 1392, 1396, 1399],
-    'tabaghe': [2, 3, 4, 2, 5, 3, 3, 4],
-    'otagh': [1, 2, 3, 3, 4, 2, 2, 3],
-    'asansor': [0, 1, 1, 0, 1, 0, 1, 1],
-    'parking': [1, 1, 1, 0, 1, 0, 1, 1],
-    'anbari': [0, 1, 1, 1, 1, 0, 0, 1],
-    'no_sazi': [1, 0, 0, 2, 1, 1, 0, 0],
-    'price': [500, 800, 1000, 1200, 1500, 650, 900, 1100]
-})  # همون داده خودت
+    'area': [50, 80, 100, 120, 150, 70, 90, 110],          # Square meters
+    'construction_year': [1390, 1395, 1400, 1385, 1398, 1392, 1396, 1399],  # Year built
+    'floor': [2, 3, 4, 2, 5, 3, 3, 4],                     # Floor number
+    'rooms': [1, 2, 3, 3, 4, 2, 2, 3],                     # Number of rooms
+    'elevator': [0, 1, 1, 0, 1, 0, 1, 1],                  # Elevator (0=No, 1=Yes)
+    'parking': [1, 1, 1, 0, 1, 0, 1, 1],                   # Parking (0=No, 1=Yes)
+    'warehouse': [0, 1, 1, 1, 1, 0, 0, 1],                 # Warehouse (0=No, 1=Yes)
+    'renovation': [1, 0, 0, 2, 1, 1, 0, 0],                # Renovation level (0-2)
+    'price': [500, 800, 1000, 1200, 1500, 650, 900, 1100]   # Price in million units
+})
 
-X = data[['metraj', 'sal_sakht', 'tabaghe', 'otagh', 'asansor', 'parking', 'anbari', 'no_sazi']]
+# Define features (X) and target variable (y)
+X = data[['area', 'construction_year', 'floor', 'rooms', 'elevator', 'parking', 'warehouse', 'renovation']]
 y = data['price']
 
-# ۱. تقسیم به آموزش و تست (۲۰٪ تست)
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
-
-# ۲. استانداردسازی (خیلی مهم!)
-scaler = StandardScaler()
-X_train_scaled = scaler.fit_transform(X_train)
-X_test_scaled = scaler.transform(X_test)
-
-# ۳. مدل جدید
+# Initialize and train the linear regression model
 model = LinearRegression()
-model.fit(X_train_scaled, y_train)
+model.fit(X, y)
 
-# ۴. ارزیابی روی دادههای تست
-y_pred = model.predict(X_test_scaled)
-print(f"خطای مطلق متوسط: {mean_absolute_error(y_test, y_pred):.0f} تومان")
-print(f"ضریب تعیین R²: {r2_score(y_test, y_pred):.2f}")
+# Make a prediction for a new house
+# Features: area=90, construction_year=1397, floor=3, rooms=2, elevator=1, parking=1, warehouse=0, renovation=0
+new_house = [[90, 1397, 3, 2, 1, 1, 0, 0]]
+predicted_price = model.predict(new_house)
+
+# Display the predicted price
+print(f"Predicted Price: {int(predicted_price[0])} million units")
